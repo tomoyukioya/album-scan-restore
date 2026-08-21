@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "album-scan-restore"
+version = "0.1.0"
+description = "台紙に貼られた写真アルバムのスキャンから、プリントを1枚ずつ切り出して褪色を補正する"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.24",
+    "opencv-python>=4.8",
+]
+
+[project.optional-dependencies]
+# 輪郭マップを自分で推論するときだけ必要（キャッシュ済みのマップを使うなら不要）
+segment = ["torch>=2.0"]
+
+[project.scripts]
+albumscan = "albumscan.cli:main"
+
+[tool.setuptools]
+packages = ["albumscan"]
+
+[tool.setuptools.package-data]
+albumscan = []

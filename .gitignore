@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# 輪郭マップのキャッシュと処理結果
+_cache/
+boxes.json
+out/
