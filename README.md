@@ -4,8 +4,9 @@
 
 > Cuts individual photo prints out of scanned album pages and restores their faded colours.
 > The key idea: **print sizes are estimated from the album itself**, never matched against a
-> table of standard paper sizes — see [なぜ定型サイズ表を使わないか](#なぜ定型サイズ表を使わないか).
-> Japanese docs only, sorry.
+> table of standard paper sizes — every album is measured on its own terms.
+> Built and validated on 36 real albums (1,035 pages, ~3,600 prints).
+> Documentation is in Japanese.
 
 実際の家族アルバム **36 冊 / 1,035 ページ / 約 3,600 枚**のスキャンで作り、検証しました。
 
@@ -107,6 +108,9 @@ python -m albumscan run スキャン一式 -r --model models/boundary.pt --out o
 - 20260102142203-0001A.jpg  枠4  枠が輪郭に乗っていない (fit 0.05) / 検出漏れの疑い (未被覆 66%)
 - 202601021429130001A.jpg  枠1  枠が輪郭に乗っていない (fit 0.26) / 検出漏れの疑い (未被覆 15%)
 ```
+
+（上は判型が 5 種類もある特に難しい 1 冊の例で、36 冊の平均では**全体の 8%** が
+要確認になります。）
 
 **この一覧で全部の不備が拾えるわけではありません。** 実データでは、人が直した
 ページのうち約半分がここに入りました。「ここだけ見れば完璧」ではなく、
