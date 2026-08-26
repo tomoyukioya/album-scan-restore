@@ -101,9 +101,13 @@ class Album(object):
                  catalogue=[[round(c[0], 1), round(c[1], 1), int(c[2])]
                             for c in self.catalogue],
                  pages={k: dict(scale=v['scale'], boxes=v['boxes'], mm=v['mm'],
-                                fit_mean=round(v['quality']['fit_mean'], 3),
-                                fit_min=round(v['quality']['fit_min'], 3),
-                                uncovered=round(v['quality']['uncovered'], 3))
+                                quality=dict(
+                                    n=v['quality']['n'],
+                                    fit_mean=round(v['quality']['fit_mean'], 3),
+                                    fit_min=round(v['quality']['fit_min'], 3),
+                                    uncovered=round(v['quality']['uncovered'], 3),
+                                    overlap=round(v['quality']['overlap'], 3)),
+                                review=Q.needs_review(v['quality']))
                         for k, v in result.items()})
         os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
         with open(path, 'w', encoding='utf-8') as f:

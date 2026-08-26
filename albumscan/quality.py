@@ -92,3 +92,43 @@ def page_report(boxes, inside, scale, catalogue=()):
         overlap=overlap(boxes),
         size_dev_max=float(max(devs)) if devs else 0.0,
         fits=fits, devs=devs)
+
+
+# ------------------------------------------------ 人に見てもらうページを選ぶ
+#
+# 実データ 1035 ページでの分布（新方式）:
+#   fit_min    p5 0.247  p10 0.316  p25 0.384  中央 0.445  p90 0.508
+#   uncovered  中央 0.007  p75 0.016  p90 0.028
+#   overlap    ほぼ 0（正しい枠は重ならない）
+#
+# 下のしきい値だと **全体の 8% が「要確認」** になる。人が確定させた枠と
+# 枠の数が食い違うページのうち 46% がこの 8% に入っていた。**残り半分は
+# 指標では拾えない**ので、「ここだけ見れば完璧」ではなく「ここから見ると
+# 効率がよい」という道具として使うこと。
+FIT_MIN = 0.30          # これを下回る枠が 1 つでもあれば要確認
+UNCOVERED = 0.10        # 検出漏れの疑い
+OVERLAP = 0.02          # 枠が重なっている
+EMPTY_OK = True         # 枠が 0 個のページ（題字だけ・白紙）は要確認にしない
+
+
+def needs_review(rep, fit_min=FIT_MIN, unc=UNCOVERED, ov=OVERLAP):
+    """要確認なら理由の一覧を、問題なければ空リストを返す。"""
+    why = []
+    if rep['n'] == 0:
+        if not EMPTY_OK or rep['uncovered'] > unc:
+            why.append('枠がない')
+        return why
+    if rep['fit_min'] < fit_min:
+        why.append('枠が輪郭に乗っていない (fit %.2f)' % rep['fit_min'])
+    if rep['uncovered'] > unc:
+        why.append('検出漏れの疑い (未被覆 %.0f%%)' % (100 * rep['uncovered']))
+    if rep['overlap'] > ov:
+        why.append('枠が重なっている (%.0f%%)' % (100 * rep['overlap']))
+    return why
+
+
+def priority(rep):
+    """要確認ページの並び順。大きいほど先に見る。"""
+    return (max(0.0, FIT_MIN - rep['fit_min']) * 3.0
+            + max(0.0, rep['uncovered'] - UNCOVERED) * 2.0
+            + max(0.0, rep['overlap'] - OVERLAP))

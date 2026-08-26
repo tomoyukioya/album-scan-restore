@@ -109,6 +109,38 @@ class TestSizes(unittest.TestCase):
         self.assertIn((88, 89), got)
 
 
+class TestReview(unittest.TestCase):
+    """人に見てもらうページを選ぶ判定。"""
+
+    def rep(self, **kw):
+        base = dict(n=3, fit_min=0.45, fit_mean=0.47, uncovered=0.01, overlap=0.0)
+        base.update(kw)
+        return base
+
+    def test_clean_page_is_not_flagged(self):
+        self.assertEqual(Q.needs_review(self.rep()), [])
+
+    def test_loose_frame_is_flagged(self):
+        self.assertTrue(Q.needs_review(self.rep(fit_min=0.05)))
+
+    def test_missed_print_is_flagged(self):
+        self.assertTrue(Q.needs_review(self.rep(uncovered=0.5)))
+
+    def test_overlapping_frames_are_flagged(self):
+        self.assertTrue(Q.needs_review(self.rep(overlap=0.2)))
+
+    def test_empty_page_is_ok_when_nothing_was_missed(self):
+        """題字だけ・白紙のページは、検出漏れが無ければ要確認にしない。"""
+        self.assertEqual(Q.needs_review(self.rep(n=0, uncovered=0.0)), [])
+        self.assertTrue(Q.needs_review(self.rep(n=0, uncovered=0.9)))
+
+    def test_priority_orders_worse_pages_first(self):
+        worse = self.rep(fit_min=0.02)
+        mild = self.rep(fit_min=0.28)
+        self.assertGreater(Q.priority(worse), Q.priority(mild))
+        self.assertEqual(Q.priority(self.rep()), 0.0)
+
+
 class TestQuality(unittest.TestCase):
     def test_prefers_the_correct_frame(self):
         p = blank()
