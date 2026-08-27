@@ -55,7 +55,9 @@ class Segmenter(object):
         self.net = UNet(base=ck.get('base', 24)).to(self.device).eval()
         self.net.load_state_dict(ck['state'])
         self.tile, self.overlap = tile, overlap
-        self.info = dict(val=ck.get('val'), dice=ck.get('dice'))
+        # 同梱のモデルには重みと構成しか入れていない。学習に使ったアルバムの
+        # 名前のような、元データを言い当てられる情報は持たせない。
+        self.info = {k: ck[k] for k in ('base',) if k in ck}
 
     def __call__(self, small):
         """縮小画像 (H, W, 3) → (3, H, W) float32 0..1
