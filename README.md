@@ -34,7 +34,7 @@
 ## インストール
 
 ```bash
-git clone https://github.com/<your-account>/album-scan-restore.git
+git clone https://github.com/tomoyukioya/album-scan-restore.git
 cd album-scan-restore
 pip install -r requirements.txt
 ```
